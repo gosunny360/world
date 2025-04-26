@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Pathway Assessment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        
+        .intro {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .question-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .question {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .options {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .options label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        #result-container {
+            display: none;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            width: 0%;
+            height: 15px;
+            background-color: #3498db;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .career-recommendation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .personality-type {
+            font-weight: bold;
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .trait-scores {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 30px;
+        }
+        
+        .trait-score {
+            margin-bottom: 16px;
+        }
+        
+        .trait-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .dimension-bar {
+            width: 100%;
+            height: 16px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+        
+        .dimension-fill {
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 8px;
+        }
+        
+        .labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .dimension-box {
+            padding: 16px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .dimension-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .dimension-description {
+            font-size: 14px;
+            color: #666;
+        }
+
+        @media print {
+            button.no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>PIET NCR PERSONALITY ASSESSMENT</h1>
+    
+    <div class="intro">
+        <h2>Welcome to Your PIET NCR Personality Assessment</h2>
+        <p>This assessment is designed to help students who have completed their 12th grade identify potential career paths based on their personality traits and preferences. Answer each question honestly for the most accurate results.</p>
+        <p>The assessment consists of 30 questions and will take approximately 10-15 minutes to complete.</p>
+        <button id="start-button">Start Assessment</button>
+    </div>
+    
+    <div id="quiz-container" style="display: none;">
+        <div class="progress-container">
+            <div class="progress-bar" id="progress"></div>
+        </div>
+        
+        <div class="question-container">
+            <div class="question" id="question-text"></div>
+            <div class="options">
+                <label><input type="radio" name="option" value="1"> Strongly Disagree</label>
+                <label><input type="radio" name="option" value="2"> Disagree</label>
+                <label><input type="radio" name="option" value="3"> Neutral</label>
+                <label><input type="radio" name="option" value="4"> Agree</label>
+                <label><input type="radio" name="option" value="5"> Strongly Agree</label>
+            </div>
+            <button id="next-button">Next</button>
+        </div>
+    </div>
+    
+    <div id="result-container">
+        <h2>Your Assessment Results</h2>
+        <div class="personality-type" id="personality-type"></div>
+        
+        <div class="p-6 mb-6 bg-blue-50 rounded-lg border border-blue-100">
+            <p id="type-description"></p>
+        </div>
+        
+        <h3 class="text-xl font-semibold mb-4">Your Results Breakdown</h3>
+        
+        <div class="trait-scores">
+            <div class="trait-score">
+                <div class="labels">
+                    <span id="e-label">Extraversion (E) <span id="e-percentage"></span></span>
+                    <span id="i-label">Introversion (I) <span id="i-percentage"></span></span>
+                </div>
+                <div class="dimension-bar">
+                    <div id="ei-bar" class="dimension-fill"></div>
+                </div>
+            </div>
+            
+            <div class="trait-score">
+                <div class="labels">
+                    <span id="s-label">Sensing (S) <span id="s-percentage"></span></span>
+                    <span id="n-label">Intuition (N) <span id="n-percentage"></span></span>
+                </div>
+                <div class="dimension-bar">
+                    <div id="sn-bar" class="dimension-fill"></div>
+                </div>
+            </div>
+            
+            <div class="trait-score">
+                <div class="labels">
+                    <span id="t-label">Thinking (T) <span id="t-percentage"></span></span>
+                    <span id="f-label">Feeling (F) <span id="f-percentage"></span></span>
+                </div>
+                <div class="dimension-bar">
+                    <div id="tf-bar" class="dimension-fill"></div>
+                </div>
+            </div>
+            
+            <div class="trait-score">
+                <div class="labels">
+                    <span id="j-label">Judging (J) <span id="j-percentage"></span></span>
+                    <span id="p-label">Perceiving (P) <span id="p-percentage"></span></span>
+                </div>
+                <div class="dimension-bar">
+                    <div id="jp-bar" class="dimension-fill"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dimension-grid">
+            <div class="dimension-box">
+                <div class="dimension-title">Extraversion (E) vs. Introversion (I)</div>
+                <div class="dimension-description">How you focus your attention and get energy</div>
+            </div>
+            
+            <div class="dimension-box">
+                <div class="dimension-title">Sensing (S) vs. Intuition (N)</div>
+                <div class="dimension-description">How you perceive information</div>
+            </div>
+            
+            <div class="dimension-box">
+                <div class="dimension-title">Thinking (T) vs. Feeling (F)</div>
+                <div class="dimension-description">How you make decisions</div>
+            </div>
+            
+            <div class="dimension-box">
+                <div class="dimension-title">Judging (J) vs. Perceiving (P)</div>
+                <div class="dimension-description">How you organize your life</div>
+            </div>
+        </div>
+        
+        <h3 class="text-xl font-semibold mt-6 mb-4">Recommended Career Paths:</h3>
+        <div id="career-recommendations"></div>
+        
+        <div class="career-recommendation">
+            <h3 class="text-xl font-semibold mb-4">Field Interest Analysis:</h3>
+            <p id="field-analysis"></p>
+        </div>
+        
+        <div class="flex justify-between mt-8">
+            <button id="restart-button" class="no-print px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Take Assessment Again</button>
+            <button id="print-results" class="no-print px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Print Results</button>
+        </div>
+    </div>
+    
+    <script>
+        // Questions data
+        const questions = [
+            // E vs I - Questions 1-7
+            { text: "1. I prefer working in groups rather than independently.", category: "EI", direction: "E" },
+            { text: "2. I enjoy being the center of attention in social situations.", category: "EI", direction: "E" },
+            { text: "3. I tend to think out loud rather than think things through internally first.", category: "EI", direction: "E" },
+            { text: "4. I prefer spending time with others rather than being alone.", category: "EI", direction: "E" },
+            { text: "5. I get energized by social interactions rather than feeling drained.", category: "EI", direction: "E" },
+            { text: "6. I prefer working on multiple projects simultaneously rather than one at a time.", category: "EI", direction: "E" },
+            { text: "7. I am comfortable speaking up in class or group discussions.", category: "EI", direction: "E" },
+            
+            // S vs N - Questions 8-15
+            { text: "8. I focus more on concrete facts and details rather than abstract theories.", category: "SN", direction: "S" },
+            { text: "9. I prefer solving practical problems rather than theoretical ones.", category: "SN", direction: "S" },
+            { text: "10. I trust past experiences more than future possibilities.", category: "SN", direction: "S" },
+            { text: "11. I prefer subjects with clear right or wrong answers rather than open-ended questions.", category: "SN", direction: "S" },
+            { text: "12. I prefer working with established methods rather than inventing new approaches.", category: "SN", direction: "S" },
+            { text: "13. I enjoy thinking about innovative concepts and possibilities for the future.", category: "SN", direction: "N" },
+            { text: "14. I enjoy finding patterns and connections between seemingly unrelated things.", category: "SN", direction: "N" },
+            { text: "15. I often think about the big picture rather than the specific details.", category: "SN", direction: "N" },
+            
+            // T vs F - Questions 16-22
+            { text: "16. I make decisions based on logical analysis rather than personal values.", category: "TF", direction: "T" },
+            { text: "17. I prefer giving honest feedback rather than worrying about people's feelings.", category: "TF", direction: "T" },
+            { text: "18. I value fairness and treating everyone equally over showing special compassion.", category: "TF", direction: "T" },
+            { text: "19. I feel more comfortable with debates and critical discussions than emotional conversations.", category: "TF", direction: "T" },
+            { text: "20. I consider myself more logical than emotional.", category: "TF", direction: "T" },
+            { text: "21. I am good at understanding how others are feeling.", category: "TF", direction: "F" },
+            { text: "22. I prioritize harmony in groups over winning an argument.", category: "TF", direction: "F" },
+            
+            // J vs P - Questions 23-30
+            { text: "23. I prefer having a structured schedule rather than being spontaneous.", category: "JP", direction: "J" },
+            { text: "24. I like to plan ahead rather than figure things out as I go.", category: "JP", direction: "J" },
+            { text: "25. I feel stressed when deadlines are approaching and work isn't finished.", category: "JP", direction: "J" },
+            { text: "26. I prefer clear expectations and guidelines rather than freedom to do things my own way.", category: "JP", direction: "J" },
+            { text: "27. I enjoy making lists and checking items off when they're complete.", category: "JP", direction: "J" },
+            { text: "28. I can easily adapt to unexpected changes in plans.", category: "JP", direction: "P" },
+            { text: "29. I often start projects that I don't finish because I get interested in new ones.", category: "JP", direction: "P" },
+            { text: "30. I prefer keeping my options open rather than making firm decisions.", category: "JP", direction: "P" }
+        ];
+        
+        // Personality type descriptions
+        const typeDescriptions = {
+            "ISTJ": "Quiet, serious, practical and orderly. You value tradition and loyalty. You're organized, responsible, and detail-oriented.",
+            "ISFJ": "Quiet, friendly, responsible, and conscientious. You're committed to fulfilling your obligations and caring for others' needs.",
+            "INFJ": "Idealistic, principled, and empathetic. You seek meaning and connection, often having deep insights about others.",
+            "INTJ": "Independent, analytical, and determined. You have high standards and a natural ability to see patterns and develop long-range plans.",
+            "ISTP": "Tolerant, flexible, and observant problem-solver. You're interested in how things work and excel at hands-on activities.",
+            "ISFP": "Quiet, friendly, sensitive, and loyal. You enjoy the present moment and what's going on around you, valuing personal freedom.",
+            "INFP": "Idealistic, loyal, and curious about possibilities. You seek to understand people and help them fulfill their potential.",
+            "INTP": "Analytical, detached, and adaptable. You're interested in theoretical models and abstract ideas, seeking logical explanations.",
+            "ESTP": "Energetic, action-oriented, and pragmatic. You enjoy solving immediate problems and are often good in crisis situations.",
+            "ESFP": "Outgoing, friendly, and spontaneous. You enjoy working with others and making things happen, focusing on real-world experiences.",
+            "ENFP": "Enthusiastic, creative, and sociable. You see possibilities everywhere and make connections between events and information.",
+            "ENTP": "Quick, ingenious, stimulating, and outspoken. You enjoy novel ideas and challenges, with a talent for strategic analysis.",
+            "ESTJ": "Practical, realistic, and decisive. You have a clear set of logical standards and value tradition and security.",
+            "ESFJ": "Warm-hearted, conscientious, and cooperative. You value harmony and work well with others to complete tasks accurately.",
+            "ENFJ": "Warm, responsive, and responsible. You're highly attuned to others' emotions, needs, and motivations, fostering cooperation.",
+            "ENTJ": "Frank, decisive, and strategic leader. You have a talent for organization and a drive for implementing long-term plans."
+        };
+        
+        // Career recommendations based on personality type
+        const careerRecommendations = {
+            "ISTJ": [
+                "Accounting & Finance: Chartered Accountant, Financial Analyst, Tax Consultant, Auditor, Financial Planner, Budget Analyst",
+                "Government & Law: Civil Services, Legal Services, Military Officer, Compliance Officer, Customs Inspector",
+                "Information Technology: Database Administrator, Systems Analyst, Network Security, IT Project Manager, Quality Assurance",
+                "Engineering: Civil Engineering, Electrical Engineering, Quality Control, Industrial Engineering, Structural Engineering",
+                "Healthcare: Pharmacist, Medical Laboratory Technician, Health Information Manager",
+                "Education: Mathematics Teacher, Educational Administrator, Academic Advisor"
+            ],
+            "ISFJ": [
+                "Healthcare: Nursing, Medical Technician, Health Information Management, Dental Hygienist, Nutritionist",
+                "Education: Elementary Education, Special Education, Library Science, School Counselor, Early Childhood Education",
+                "Social Services: Counseling, Social Work, Child Welfare, Elder Care Specialist, Non-profit Management",
+                "Business: Office Administration, Human Resources, Customer Service Management, Logistics Coordinator, Administrative Support",
+                "Finance: Personal Banking, Insurance Agent, Benefits Administrator, Bookkeeper",
+                "Hospitality: Hotel Management, Guest Relations, Tourism Services"
+            ],
+            "INFJ": [
+                "Mental Health: Counseling Psychology, Psychiatry, Art Therapy, Music Therapy, Rehabilitation Counselor",
+                "Education: Teaching (especially humanities), Educational Consulting, Special Education, Language Arts Teacher",
+                "Creative Fields: Writing, Content Creation, Film Direction, Graphic Design, User Experience Design",
+                "Healthcare: Alternative Medicine, Nutritionist, Occupational Therapy, Mental Health Nurse, Holistic Health",
+                "Non-profit: Program Coordinator, Humanitarian Aid, Environmental Advocacy, Social Justice Organizer",
+                "Human Resources: Employee Development, Organizational Psychology, Corporate Training"
+            ],
+            "INTJ": [
+                "Sciences: Research Scientist, Medical Researcher, Computer Science, Bioinformatics, Quantum Physics",
+                "Business Strategy: Management Consultant, Investment Banker, Financial Strategist, Chief Technology Officer, Business Analyst",
+                "Engineering: Software Engineering, Systems Engineering, Robotics, Artificial Intelligence, Cybersecurity",
+                "Academia: University Professor, Research Director, Data Scientist, Theoretical Physicist, Economics Researcher",
+                "Healthcare: Psychiatrist, Pharmacologist, Medical Research, Biomedical Engineering",
+                "Creative Technology: Game Design, Virtual Reality Development, Technology Architecture"
+            ],
+            "ISTP": [
+                "Technical Trades: Mechanical Engineering, Electrical Engineering, Computer Hardware",
+                "Forensics & Investigation: Forensic Science, Criminal Investigation, Systems Analysis",
+                "Emergency Services: Paramedic, Firefighter, Emergency Management",
+                "Aviation & Transportation: Pilot, Air Traffic Controller, Automotive Engineering"
+            ],
+            "ISFP": [
+                "Creative Arts: Graphic Design, Photography, Interior Design",
+                "Healthcare: Physical Therapy, Veterinary Medicine, Dental Hygiene",
+                "Culinary Arts: Chef, Food Stylist, Restaurant Management",
+                "Fashion & Beauty: Fashion Design, Cosmetology, Textile Design"
+            ],
+            "INFP": [
+                "Creative Writing: Author, Poet, Screenwriter",
+                "Psychology & Counseling: Therapist, Social Worker, Career Counselor",
+                "Education: Language Arts Teacher, Special Education, Educational Psychology",
+                "Arts & Media: Graphic Design, Music Composition, Film Production"
+            ],
+            "INTP": [
+                "Computer Science: Software Development, AI Research, Game Design",
+                "Natural Sciences: Physics, Mathematics, Astronomy",
+                "Research & Development: Technology R&D, Laboratory Research",
+                "Philosophy & Academia: Professor, Scientific Research, Economics"
+            ],
+            "ESTP": [
+                "Business & Entrepreneurship: Sales, Marketing, Entrepreneurship",
+                "Finance: Stock Trading, Investment Banking, Real Estate",
+                "Sports & Recreation: Sports Management, Coaching, Fitness Training",
+                "Entertainment: Event Management, Travel Industry, Hospitality Management"
+            ],
+            "ESFP": [
+                "Entertainment & Performance: Acting, Dance, Event Planning",
+                "Sales & Marketing: Retail Management, Public Relations, Brand Ambassador",
+                "Healthcare: Primary Care Medicine, Pediatrics, Occupational Therapy",
+                "Education: Early Childhood Education, Physical Education, Art Education"
+            ],
+            "ENFP": [
+                "Creative Fields: Advertising, Public Relations, Creative Direction",
+                "Human Development: Teaching, Training & Development, Life Coaching",
+                "Entertainment & Media: Journalism, Broadcasting, Digital Content Creation",
+                "Entrepreneurship: Start-ups, Social Entrepreneurship, Consulting"
+            ],
+            "ENTP": [
+                "Innovation & Technology: Technology Entrepreneurship, Product Development",
+                "Law & Politics: Law (particularly debate/litigation), Political Consulting",
+                "Media & Communications: Journalism, Creative Direction, Marketing Strategy",
+                "Business Consulting: Management Consulting, Business Development, Venture Capital"
+            ],
+            "ESTJ": [
+                "Business Management: Operations Management, Project Management",
+                "Finance & Banking: Banking, Financial Planning, Insurance",
+                "Law & Government: Legal Practice, Public Administration, Military Leadership",
+                "Healthcare Administration: Hospital Administration, Medical Practice Management"
+            ],
+            "ESFJ": [
+                "Healthcare: Nursing, Medical Office Administration, Patient Advocacy",
+                "Education: Teaching, School Administration, Student Affairs",
+                "Customer Service: Hospitality Management, Retail Management",
+                "Community Services: Non-profit Management, Religious Ministry, Community Health"
+            ],
+            "ENFJ": [
+                "Education & Training: Teaching, Corporate Training, Educational Administration",
+                "Human Resources: HR Management, Organizational Development, Recruitment",
+                "Healthcare: Psychology, Speech Pathology, Health Education",
+                "Public Service: Political Leadership, Public Relations, Fundraising"
+            ],
+            "ENTJ": [
+                "Corporate Leadership: Executive Management, Business Strategy, Entrepreneurship",
+                "Law: Corporate Law, Intellectual Property Law, Trial Advocacy",
+                "Consulting: Management Consulting, Business Analytics, Strategic Planning",
+                "Finance: Investment Banking, Corporate Finance, Venture Capital"
+            ]
+        };
+
+        // Field interest mapping based on MBTI dimensions
+        const fieldInterestMapping = {
+            E: {
+                strength: "You tend to be energized by social interaction and external engagement.",
+                fields: "Consider fields that involve working with others, communication, and active environments."
+            },
+            I: {
+                strength: "You tend to be energized by deep focus and internal reflection.",
+                fields: "Consider fields that allow independent work, analysis, and concentration."
+            },
+            S: {
+                strength: "You tend to focus on concrete details and practical applications.",
+                fields: "Consider fields that involve working with tangible information, established procedures, and immediate results."
+            },
+            N: {
+                strength: "You tend to focus on patterns, possibilities, and the big picture.",
+                fields: "Consider fields that involve innovation, theoretical concepts, and future planning."
+            },
+            T: {
+                strength: "You tend to make decisions based on logical analysis and objective criteria.",
+                fields: "Consider fields that involve analytical thinking, problem-solving, and strategic planning."
+            },
+            F: {
+                strength: "You tend to make decisions based on values and impact on people.",
+                fields: "Consider fields that involve understanding people, communication, and providing support."
+            },
+            J: {
+                strength: "You tend to prefer structure, planning, and closure.",
+                fields: "Consider fields that involve organization, management, and implementation of systems."
+            },
+            P: {
+                strength: "You tend to prefer flexibility, adaptation, and keeping options open.",
+                fields: "Consider fields that involve adaptability, troubleshooting, and responding to changing situations."
+            }
+        };
+        
+        let currentQuestion = 0;
+        const results = {
+            EI: 0, // positive = E, negative = I
+            SN: 0, // positive = S, negative = N
+            TF: 0, // positive = T, negative = F
+            JP: 0  // positive = J, negative = P
+        };
+        
+        // Elements
+        const startButton = document.getElementById('start-button');
+        const quizContainer = document.getElementById('quiz-container');
+        const questionText = document.getElementById('question-text');
+        const nextButton = document.getElementById('next-button');
+        const resultContainer = document.getElementById('result-container');
+        const progressBar = document.getElementById('progress');
+        const restartButton = document.getElementById('restart-button');
+        const printButton = document.getElementById('print-results');
+        
+        // Event listeners
+        startButton.addEventListener('click', startQuiz);
+        nextButton.addEventListener('click', nextQuestion);
+        restartButton.addEventListener('click', restartQuiz);
+        printButton.addEventListener('click', printResults);
+        
+        function startQuiz() {
+            document.querySelector('.intro').style.display = 'none';
+            quizContainer.style.display = 'block';
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            questionText.textContent = question.text;
+            
+            // Clear any selected option
+            const options = document.getElementsByName('option');
+            options.forEach(option => option.checked = false);
+            
+            // Update progress bar
+            const progressPercentage = (currentQuestion / questions.length) * 100;
+            progressBar.style.width = progressPercentage + '%';
+            
+            // Disable next button until an option is selected
+            nextButton.disabled = true;
+            
+            // Enable next button when an option is selected
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    nextButton.disabled = false;
+                });
+            });
+        }
+        
+        function nextQuestion() {
+            const selectedOption = document.querySelector('input[name="option"]:checked');
+            
+            if (!selectedOption) {
+                alert('Please select an option');
+                return;
+            }
+            
+            // Calculate score
+            const question = questions[currentQuestion];
+            const score = parseInt(selectedOption.value);
+            
+            // Adjust score based on question direction
+            let adjustedScore;
+            if (question.category === "EI") {
+                adjustedScore = question.direction === "E" ? score : 6 - score;
+                results.EI += (adjustedScore - 3);
+            } else if (question.category === "SN") {
+                adjustedScore = question.direction === "S" ? score : 6 - score;
+                results.SN += (adjustedScore - 3);
+            } else if (question.category === "TF") {
+                adjustedScore = question.direction === "T" ? score : 6 - score;
+                results.TF += (adjustedScore - 3);
+            } else if (question.category === "JP") {
+                adjustedScore = question.direction === "J" ? score : 6 - score;
+                results.JP += (adjustedScore - 3);
+            }
+            
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+        
+        function showResults() {
+            quizContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+            
+            // Determine personality type
+            const type = 
+                (results.EI >= 0 ? "E" : "I") +
+                (results.SN >= 0 ? "S" : "N") +
+                (results.TF >= 0 ? "T" : "F") +
+                (results.JP >= 0 ? "J" : "P");
+            
+            // Display personality type
+            document.getElementById('personality-type').textContent = type;
+            
+            // Calculate percentages for each dimension
+            // We need to count how many questions were in each dimension
+            const questionCounts = {
+                EI: questions.filter(q => q.category === "EI").length,
+                SN: questions.filter(q => q.category === "SN").length,
+                TF: questions.filter(q => q.category === "TF").length,
+                JP: questions.filter(q => q.category === "JP").length
+            };
+            
+            // Maximum possible score in each dimension (2 points per question)
+            const maxScores = {
+                EI: questionCounts.EI * 2,
+                SN: questionCounts.SN * 2,
+                TF: questionCounts.TF * 2,
+                JP: questionCounts.JP * 2
+            };
+            
+            // Calculate percentages for each trait
+            let ePercentage, iPercentage, sPercentage, nPercentage, tPercentage, fPercentage, jPercentage, pPercentage;
+            
+            if (results.EI >= 0) {
+                ePercentage = Math.round((results.EI / maxScores.EI) * 100);
+                iPercentage = 100 - ePercentage;
+            } else {
+                iPercentage = Math.round((-results.EI / maxScores.EI) * 100);
+                ePercentage = 100 - iPercentage;
+            }
+            
+            if (results.SN >= 0) {
+                sPercentage = Math.round((results.SN / maxScores.SN) * 100);
+                nPercentage = 100 - sPercentage;
+            } else {
+                nPercentage = Math.round((-results.SN / maxScores.SN) * 100);
+                sPercentage = 100 - nPercentage;
+            }
+            
+            if (results.TF >= 0) {
+                tPercentage = Math.round((results.TF / maxScores.TF) * 100);
+                fPercentage = 100 - tPercentage;
+            } else {
+                fPercentage = Math.round((-results.TF / maxScores.TF) * 100);
+                tPercentage = 100 - fPercentage;
+            }
+            
+            if (results.JP >= 0) {
+                jPercentage = Math.round((results.JP / maxScores.JP) * 100);
+                pPercentage = 100 - jPercentage;
+            } else {
+                pPercentage = Math.round((-results.JP / maxScores.JP) * 100);
+                jPercentage = 100 - pPercentage;
+            }
+            
+            // Update percentage displays for each trait
+            document.getElementById('e-percentage').textContent = `(${ePercentage}%)`;
+            document.getElementById('i-percentage').textContent = `(${iPercentage}%)`;
+            document.getElementById('s-percentage').textContent = `(${sPercentage}%)`;
+            document.getElementById('n-percentage').textContent = `(${nPercentage}%)`;
+            document.getElementById('t-percentage').textContent = `(${tPercentage}%)`;
+            document.getElementById('f-percentage').textContent = `(${fPercentage}%)`;
+            document.getElementById('j-percentage').textContent = `(${jPercentage}%)`;
+            document.getElementById('p-percentage').textContent = `(${pPercentage}%)`;
+            
+            // Update percentage bars
+            document.getElementById('ei-bar').style.width = `${ePercentage}%`;
+            document.getElementById('sn-bar').style.width = `${sPercentage}%`;
+            document.getElementById('tf-bar').style.width = `${tPercentage}%`;
+            document.getElementById('jp-bar').style.width = `${jPercentage}%`;
+            
+            // Display type description
+            document.getElementById('type-description').textContent = typeDescriptions[type];
+            
+            // Display career recommendations
+            const careerRecsElement = document.getElementById('career-recommendations');
+            careerRecsElement.innerHTML = '';
+            
+            if (careerRecommendations[type]) {
+                careerRecommendations[type].forEach(career => {
+                    const p = document.createElement('p');
+                    p.textContent = career;
+                    careerRecsElement.appendChild(p);
+                });
+            }
+            
+            // Field analysis based on strongest preferences
+            const fieldAnalysis = document.getElementById('field-analysis');
+            const typeArray = type.split('');
+            let analysisText = '';
+            
+            typeArray.forEach((letter, index) => {
+                const dimension = ['E/I', 'S/N', 'T/F', 'J/P'][index];
+                const strength = Math.abs(Object.values(results)[index]);
+                
+                analysisText += `<strong>${dimension} (${letter}):</strong> ${fieldInterestMapping[letter].strength} `;
+                analysisText += `${fieldInterestMapping[letter].fields}<br><br>`;
+            });
+            
+            fieldAnalysis.innerHTML = analysisText;
+        }
+        
+        function restartQuiz() {
+            currentQuestion = 0;
+            Object.keys(results).forEach(key => {
+                results[key] = 0;
+            });
+            
+            resultContainer.style.display = 'none';
+            document.querySelector('.intro').style.display = 'block';
+        }
+        
+        function printResults() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
